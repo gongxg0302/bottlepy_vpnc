@@ -3,30 +3,28 @@ import time
 import os.path
 @route('/vpnc', method="GET")
 def vpnvpncc():
-    if os.path.isfile('/Users/xiaogang/test.txt'):
+    if os.path.isfile('/var/run/vpnc/pid'):
         label = 'label-success'
-        result = 'actvie'
+        result = 'active'
     else:
         label = 'label-important'
-        result = 'inactvie'
-	#GET for when the LEDs are toggled or flashed
-	#if request.query.get('Led1On','').strip():
+        result = 'inactive'
     if unicode (request.query.get ('connect', ''), "utf-8") == 'true':
-        if os.path.isfile('/Users/xiaogang/test.txt'):
+        if os.path.isfile('/var/run/vpnc/pid'):
             pass
         else:
-            os.popen('touch /Users/xiaogang/test.txt')
+            os.popen('vpnc --dpd-idle 0 /etc/vpnc/default.conf')
         #time.sleep(2)
         label = 'label-success'
         result = 'active'
     elif unicode (request.query.get ('disconnect', ''), "utf-8") == 'true':
-        if os.path.isfile('/Users/xiaogang/test.txt'):
-            os.popen('rm /Users/xiaogang/test.txt')
+        if os.path.isfile('/var/run/vpnc/pid'):
+            os.popen('vpnc-disconnect')
         else:
             pass
         #time.sleep(2)
         label = 'label-important'
         result = 'inactive'
-    return template('templates/vpnc.tpl',label=label, result=result)
+    return template('/root/bottlepy_vpnc/templates/vpnc.tpl',label=label, result=result)
 
-run(host='localhost', port=8080)
+run(host='192.168.1.1', port=80)
